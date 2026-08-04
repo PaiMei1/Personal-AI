@@ -1,0 +1,46 @@
+# Build output
+bin/
+obj/
+Debug/
+Release/
+artifacts/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.rsuser
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+_ReSharper*/
+*.DotSettings.user
+
+# Logs
+*.log
+Logs/
+
+# Test results
+TestResults/
+*.trx
+
+# macOS
+.DS_Store
+
+# NuGet
+packages/
+
+# .NET generated files
+project.lock.json
+project.fragment.lock.json
+
+# MAUI / platform build output
+**/bin/
+**/obj/
+
+# Local environment / secrets
+.env
+.env.*
