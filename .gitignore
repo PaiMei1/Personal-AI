@@ -1,1 +1,19 @@
-/.idea/
+cat > .gitignore << 'EOF'
+# Build outputs
+bin/
+obj/
+
+# JetBrains Rider / IntelliJ
+.idea/
+
+# macOS
+.DS_Store
+
+# .NET user-specific files
+*.user
+*.suo
+
+# Java/Gradle (backend)
+.gradle/
+build/
+EOF
