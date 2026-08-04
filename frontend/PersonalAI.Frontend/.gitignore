@@ -1,46 +1,80 @@
-# Build output
-bin/
-obj/
-Debug/
-Release/
-artifacts/
+# ================================
+# .NET / MAUI
+# ================================
 
+# Build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+artifacts/
+bld/
+out/
+
+# Logs
+[Ll]og/
+[Ll]ogs/
+*.log
+
+# ================================
 # Visual Studio
+# ================================
+
 .vs/
+
+# User-specific files
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
 *.rsuser
 
-# Rider / JetBrains
+# ================================
+# JetBrains Rider
+# ================================
+
 .idea/
 *.sln.iml
-_ReSharper*/
-*.DotSettings.user
 
-# Logs
-*.log
-Logs/
+# ================================
+# NuGet
+# ================================
 
+*.nupkg
+*.snupkg
+packages/
+
+# ================================
 # Test results
+# ================================
+
 TestResults/
 *.trx
 
-# macOS
-.DS_Store
-
-# NuGet
-packages/
-
+# ================================
 # .NET generated files
+# ================================
+
 project.lock.json
 project.fragment.lock.json
 
-# MAUI / platform build output
-**/bin/
-**/obj/
+# ================================
+# macOS
+# ================================
 
-# Local environment / secrets
-.env
-.env.*
+.DS_Store
+
+# ================================
+# VS Code
+# ================================
+
+.vscode/
+
+# ================================
+# Temporary / backup files
+# ================================
+
+*.tmp
+*.temp
+*~
+~$*
