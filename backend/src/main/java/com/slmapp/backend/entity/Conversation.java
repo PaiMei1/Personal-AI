@@ -14,7 +14,7 @@ public class Conversation {
     private UUID id;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private UUID userId;
 
     private String title;
 
@@ -24,7 +24,7 @@ public class Conversation {
     protected Conversation() {
     }
 
-    public Conversation(Long userId, String title) {
+    public Conversation(UUID userId, String title) {
         this.userId = userId;
         this.title = title;
     }
@@ -33,7 +33,7 @@ public class Conversation {
         return id;
     }
 
-    public Long getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 

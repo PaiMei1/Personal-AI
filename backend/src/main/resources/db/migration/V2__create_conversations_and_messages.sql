@@ -1,6 +1,6 @@
 CREATE TABLE conversations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id BIGINT NOT NULL REFERENCES users(id),
+    user_id UUID NOT NULL REFERENCES users(id),
     title VARCHAR(255),
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );

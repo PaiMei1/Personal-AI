@@ -42,7 +42,7 @@ public class ChatOrchestrationService {
         this.magiSynthesisRepository = magiSynthesisRepository;
     }
 
-    public Message handle(Long userId, UUID conversationId, String prompt) {
+    public Message handle(UUID userId, UUID conversationId, String prompt) {
 
         Conversation conversation = conversationId != null
                 ? conversationRepository.findById(conversationId).orElseThrow()

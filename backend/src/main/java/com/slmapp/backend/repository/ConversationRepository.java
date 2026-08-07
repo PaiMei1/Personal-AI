@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ConversationRepository extends JpaRepository<Conversation, UUID> {
-    List<Conversation> findByUserIdOrderByCreatedAtDesc(Long userId);
+    List<Conversation> findByUserIdOrderByCreatedAtDesc(UUID userId);
 }

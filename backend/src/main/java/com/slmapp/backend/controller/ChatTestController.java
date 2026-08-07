@@ -7,9 +7,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/test/chat")
 public class ChatTestController {
+
+    // Hardcoded to a real user id from the dev DB for manual testing.
+    // Swap for the authenticated user's id once this is wired through SecurityContext.
+    private static final UUID TEST_USER_ID = UUID.fromString("611ea423-a192-4472-b8fb-e268915f7136");
 
     private final ChatOrchestrationService chatOrchestrationService;
 
@@ -17,10 +23,8 @@ public class ChatTestController {
         this.chatOrchestrationService = chatOrchestrationService;
     }
 
-    // userId is hardcoded to 1L for manual testing - swap for the authenticated
-    // user's id once this is wired through SecurityContext instead of a raw test endpoint.
     @PostMapping
     public Message ask(@RequestParam String prompt) {
-        return chatOrchestrationService.handle(1L, null, prompt);
+        return chatOrchestrationService.handle(TEST_USER_ID, null, prompt);
     }
 }
