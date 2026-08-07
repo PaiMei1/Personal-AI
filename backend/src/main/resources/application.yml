@@ -10,6 +10,10 @@ spring:
     username: ${DB_USERNAME:appuser}
     password: ${DB_PASSWORD:apppassword}
 
+  ollama:
+    base-url: http://localhost:11434
+    default-model: qwen3:8b
+
   jpa:
     hibernate:
       ddl-auto: validate
@@ -31,3 +35,6 @@ springdoc:
     path: /swagger-ui.html
   api-docs:
     path: /v3/api-docs
+ollama:
+  base-url: http://localhost:11434
+  default-model: qwen3:8b
