@@ -31,6 +31,7 @@ public class OllamaClient implements SlmClient {
                         new OllamaChatMessage("system", systemPrompt),
                         new OllamaChatMessage("user", userPrompt)
                 ),
+                false,
                 false
         );
 

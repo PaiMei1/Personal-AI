@@ -31,16 +31,26 @@ public class MagiCoordinator {
         String candidateBlock = buildCandidateBlock(candidates);
         List<MagiVote> votes = new ArrayList<>();
         for (MagiPersona persona : MagiPersona.values()) {
+
+            List<MagiUnit> otherUnits = new ArrayList<>();
+            for (MagiUnit unit : MagiUnit.values()) {
+                if (unit != persona.unit()) {
+                    otherUnits.add(unit);
+                }
+            }
+
             String voteSystemPrompt = persona.systemPrompt() + """
 
                     You will be shown three candidate answers labeled MELCHIOR, BALTHASAR, and CASPER
-                    to the same question, including your own. Vote for the one you judge best -
-                    you may vote for your own. Respond with ONLY one word: MELCHIOR, BALTHASAR, or CASPER.
+                    to the same question. Your own answer is """ + persona.unit() + """
+                     - you may NOT vote for your own answer, even if you think it is best.
+                    Choose whichever of the OTHER TWO answers is more complete, accurate, and well-reasoned.
+                    Respond with ONLY one word: """ + otherUnits.get(0) + " or " + otherUnits.get(1) + """
                     """;
             String voteUserPrompt = "Question: " + userPrompt + "\n\n" + candidateBlock;
 
             String rawVote = slmClient.complete(voteSystemPrompt, voteUserPrompt, null);
-            MagiUnit votedFor = parseVote(rawVote);
+            MagiUnit votedFor = parseVote(rawVote, otherUnits);
             if (votedFor != null) {
                 votes.add(new MagiVote(persona.unit(), votedFor));
             }
@@ -71,15 +81,13 @@ public class MagiCoordinator {
         return sb.toString();
     }
 
-    private MagiUnit parseVote(String raw) {
+    private MagiUnit parseVote(String raw, List<MagiUnit> allowedUnits) {
         String cleaned = raw.trim().toUpperCase();
-        for (MagiUnit unit : MagiUnit.values()) {
+        for (MagiUnit unit : allowedUnits) {
             if (cleaned.contains(unit.name())) {
                 return unit;
             }
         }
-        // Model returned something unparseable - drop this vote rather than guess.
-        // VotingStrategy treats a missing vote conservatively (leans toward SPLIT).
         return null;
     }
 }
