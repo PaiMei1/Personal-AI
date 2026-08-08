@@ -71,7 +71,7 @@ public class ChatOrchestrationService {
             }
             for (MagiVote vote : outcome.votes()) {
                 magiVerdictRepository.save(new MagiVerdict(
-                        assistantMessage.getId(), vote.voter(), 2, null, vote.votedFor(), null));
+                        assistantMessage.getId(), vote.voter(), 2, vote.justification(), vote.votedFor(), vote.confidence()));
             }
 
             if (outcome.consensusResult() == ConsensusResult.SPLIT) {

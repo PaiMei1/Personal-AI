@@ -1,5 +1,7 @@
 package com.slmapp.backend.magi;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.slmapp.backend.entity.MagiUnit;
 import com.slmapp.backend.slm.SlmClient;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,21 @@ public class MagiCoordinator {
     private final SlmClient slmClient;
     private final VotingStrategy votingStrategy;
     private final SynthesisEngine synthesisEngine;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private static final String VOTE_JSON_INSTRUCTIONS = """
+
+            You will be shown three candidate answers labeled MELCHIOR, BALTHASAR, and CASPER
+            to the same question, including your own. You may vote for your own answer if you are
+            genuinely confident it is best - do not default to it out of habit, and do not avoid it
+            out of false modesty either. Rate your confidence honestly.
+
+            Respond with ONLY valid JSON, no other text, in this exact shape:
+            {"votedFor": "MELCHIOR", "confidence": 0.85, "justification": "one short sentence"}
+
+            votedFor must be exactly one of: MELCHIOR, BALTHASAR, CASPER.
+            confidence must be a number between 0.0 and 1.0.
+            """;
 
     public MagiCoordinator(SlmClient slmClient, VotingStrategy votingStrategy, SynthesisEngine synthesisEngine) {
         this.slmClient = slmClient;
@@ -31,28 +48,13 @@ public class MagiCoordinator {
         String candidateBlock = buildCandidateBlock(candidates);
         List<MagiVote> votes = new ArrayList<>();
         for (MagiPersona persona : MagiPersona.values()) {
-
-            List<MagiUnit> otherUnits = new ArrayList<>();
-            for (MagiUnit unit : MagiUnit.values()) {
-                if (unit != persona.unit()) {
-                    otherUnits.add(unit);
-                }
-            }
-
-            String voteSystemPrompt = persona.systemPrompt() + """
-
-                    You will be shown three candidate answers labeled MELCHIOR, BALTHASAR, and CASPER
-                    to the same question. Your own answer is """ + persona.unit() + """
-                     - you may NOT vote for your own answer, even if you think it is best.
-                    Choose whichever of the OTHER TWO answers is more complete, accurate, and well-reasoned.
-                    Respond with ONLY one word: """ + otherUnits.get(0) + " or " + otherUnits.get(1) + """
-                    """;
+            String voteSystemPrompt = persona.systemPrompt() + VOTE_JSON_INSTRUCTIONS;
             String voteUserPrompt = "Question: " + userPrompt + "\n\n" + candidateBlock;
 
             String rawVote = slmClient.complete(voteSystemPrompt, voteUserPrompt, null);
-            MagiUnit votedFor = parseVote(rawVote, otherUnits);
-            if (votedFor != null) {
-                votes.add(new MagiVote(persona.unit(), votedFor));
+            MagiVote vote = parseVote(persona.unit(), rawVote);
+            if (vote != null) {
+                votes.add(vote);
             }
         }
 
@@ -81,13 +83,32 @@ public class MagiCoordinator {
         return sb.toString();
     }
 
-    private MagiUnit parseVote(String raw, List<MagiUnit> allowedUnits) {
-        String cleaned = raw.trim().toUpperCase();
-        for (MagiUnit unit : allowedUnits) {
-            if (cleaned.contains(unit.name())) {
-                return unit;
+    private MagiVote parseVote(MagiUnit voter, String raw) {
+        String json = extractJson(raw);
+        try {
+            JsonNode node = objectMapper.readTree(json);
+            String votedForStr = node.path("votedFor").asText(null);
+            if (votedForStr == null) {
+                return null;
             }
+            MagiUnit votedFor = MagiUnit.valueOf(votedForStr.trim().toUpperCase());
+            double confidence = node.path("confidence").asDouble(0.5);
+            confidence = Math.max(0.0, Math.min(1.0, confidence));
+            String justification = node.path("justification").asText("");
+            return new MagiVote(voter, votedFor, confidence, justification);
+        } catch (Exception e) {
+            // Model didn't return parseable JSON or a valid unit name - drop this vote
+            // rather than guess. VotingStrategy handles a reduced vote count gracefully.
+            return null;
         }
-        return null;
+    }
+
+    private String extractJson(String raw) {
+        int start = raw.indexOf('{');
+        int end = raw.lastIndexOf('}');
+        if (start >= 0 && end > start) {
+            return raw.substring(start, end + 1);
+        }
+        return "{}";
     }
 }
