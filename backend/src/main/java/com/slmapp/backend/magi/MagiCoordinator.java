@@ -3,6 +3,8 @@ package com.slmapp.backend.magi;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.slmapp.backend.entity.MagiUnit;
+import com.slmapp.backend.magi.events.MagiUnitResultEvent;
+import com.slmapp.backend.magi.events.MagiUnitStatusEvent;
 import com.slmapp.backend.slm.SlmClient;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 public class MagiCoordinator {
@@ -20,26 +23,28 @@ public class MagiCoordinator {
     private final SlmClient slmClient;
     private final VotingStrategy votingStrategy;
     private final SynthesisEngine synthesisEngine;
+    private final MagiEventPublisher eventPublisher;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public MagiCoordinator(SlmClient slmClient, VotingStrategy votingStrategy, SynthesisEngine synthesisEngine) {
+    public MagiCoordinator(SlmClient slmClient, VotingStrategy votingStrategy,
+                            SynthesisEngine synthesisEngine, MagiEventPublisher eventPublisher) {
         this.slmClient = slmClient;
         this.votingStrategy = votingStrategy;
         this.synthesisEngine = synthesisEngine;
+        this.eventPublisher = eventPublisher;
     }
 
-    public MagiOutcome run(String userPrompt) {
+    public MagiOutcome run(UUID messageId, String userPrompt) {
 
         List<MagiCandidateAnswer> candidates = new ArrayList<>();
         for (MagiPersona persona : MagiPersona.values()) {
+            eventPublisher.unitStatus(new MagiUnitStatusEvent(messageId, persona.unit(), "THINKING", 1));
             String answer = slmClient.complete(persona.systemPrompt(), userPrompt, null);
             candidates.add(new MagiCandidateAnswer(persona.unit(), answer));
+            eventPublisher.unitStatus(new MagiUnitStatusEvent(messageId, persona.unit(), "DONE", 1));
+            eventPublisher.unitResult(new MagiUnitResultEvent(messageId, persona.unit(), 1, answer, null));
         }
 
-        // Shuffle candidates behind anonymous labels (A/B/C) once per run, shared across all
-        // voters. This is what removes self-bias: a persona votes on anonymized answers and
-        // does not know which one is its own, so a self-vote can only happen because the
-        // answer is genuinely judged best - not because of identity.
         List<MagiUnit> shuffledUnits = new ArrayList<>(List.of(MagiUnit.values()));
         Collections.shuffle(shuffledUnits);
 
@@ -54,6 +59,8 @@ public class MagiCoordinator {
 
         List<MagiVote> votes = new ArrayList<>();
         for (MagiPersona persona : MagiPersona.values()) {
+            eventPublisher.unitStatus(new MagiUnitStatusEvent(messageId, persona.unit(), "THINKING", 2));
+
             String voteSystemPrompt = persona.systemPrompt() + """
 
                     You will be shown three candidate answers labeled A, B, and C to the same question.
@@ -70,8 +77,11 @@ public class MagiCoordinator {
 
             String rawVote = slmClient.complete(voteSystemPrompt, voteUserPrompt, null);
             MagiVote vote = parseVote(persona.unit(), rawVote, labelToUnit);
+
+            eventPublisher.unitStatus(new MagiUnitStatusEvent(messageId, persona.unit(), "DONE", 2));
             if (vote != null) {
                 votes.add(vote);
+                eventPublisher.unitResult(new MagiUnitResultEvent(messageId, persona.unit(), 2, vote.justification(), vote.votedFor()));
             }
         }
 

@@ -37,6 +37,10 @@ public class Message {
     @Column(name = "winning_unit")
     private MagiUnit winningUnit;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private MessageStatus status = MessageStatus.COMPLETE;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
@@ -63,6 +67,10 @@ public class Message {
 
     public String getContent() {
         return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getModelUsed() {
@@ -95,6 +103,14 @@ public class Message {
 
     public void setWinningUnit(MagiUnit winningUnit) {
         this.winningUnit = winningUnit;
+    }
+
+    public MessageStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(MessageStatus status) {
+        this.status = status;
     }
 
     public Instant getCreatedAt() {
