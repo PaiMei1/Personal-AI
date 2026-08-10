@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PersonalAI.Frontend.Views.MagiPage"
+             Title="MAGI">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Editor x:Name="PromptEditor" Placeholder="Ask something..." AutoSize="TextChanges" HeightRequest="100" />
+            <Button x:Name="SendButton" Text="Send" Clicked="OnSendClicked" />
+
+            <VerticalStackLayout x:Name="ModeSelectionPanel" IsVisible="False" Spacing="10">
+                <Label Text="This question needs a mode:" FontAttributes="Bold" />
+                <Button Text="Quick Answer (DIRECT)" Clicked="OnDirectModeClicked" />
+                <Button Text="Full MAGI Debate" Clicked="OnMagiModeClicked" />
+                <Button Text="Melchior Only" Clicked="OnMelchiorOnlyClicked" />
+                <Button Text="Balthasar Only" Clicked="OnBalthasarOnlyClicked" />
+                <Button Text="Casper Only" Clicked="OnCasperOnlyClicked" />
+            </VerticalStackLayout>
+
+            <ActivityIndicator x:Name="LoadingIndicator" IsRunning="False" IsVisible="False" />
+            <Label x:Name="ErrorLabel" TextColor="Red" IsVisible="False" />
+
+            <Border Stroke="Gray" StrokeThickness="1" Padding="10">
+                <VerticalStackLayout>
+                    <Label Text="MELCHIOR" FontAttributes="Bold" />
+                    <Label x:Name="MelchiorStatusLabel" Text="Idle" />
+                    <Label x:Name="MelchiorAnswerLabel" FontSize="12" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray" StrokeThickness="1" Padding="10">
+                <VerticalStackLayout>
+                    <Label Text="BALTHASAR" FontAttributes="Bold" />
+                    <Label x:Name="BalthasarStatusLabel" Text="Idle" />
+                    <Label x:Name="BalthasarAnswerLabel" FontSize="12" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray" StrokeThickness="1" Padding="10">
+                <VerticalStackLayout>
+                    <Label Text="CASPER" FontAttributes="Bold" />
+                    <Label x:Name="CasperStatusLabel" Text="Idle" />
+                    <Label x:Name="CasperAnswerLabel" FontSize="12" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Label x:Name="VerdictLabel" FontAttributes="Bold" FontSize="18" IsVisible="False" HorizontalOptions="Center" />
+            <Label x:Name="DirectAnswerLabel" IsVisible="False" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

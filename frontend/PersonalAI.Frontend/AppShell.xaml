@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Shell
-    x:Class="PersonalAI.Frontend.AppShell"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:PersonalAI.Frontend"
-    Shell.FlyoutBehavior="Disabled">
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:views="clr-namespace:PersonalAI.Frontend.Views"
+       x:Class="PersonalAI.Frontend.AppShell">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <TabBar>
+        <ShellContent Title="Chats" Route="chats" ContentTemplate="{DataTemplate views:ChatsPage}" />
+        <ShellContent Title="MAGI" Route="magi" ContentTemplate="{DataTemplate views:MagiPage}" />
+        <ShellContent Title="Account" Route="account" ContentTemplate="{DataTemplate views:AccountPage}" />
+    </TabBar>
 
 </Shell>
