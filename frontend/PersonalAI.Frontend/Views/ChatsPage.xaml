@@ -3,7 +3,32 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PersonalAI.Frontend.Views.ChatsPage"
              Title="Chats">
-    <VerticalStackLayout Padding="30" Spacing="15" VerticalOptions="Center">
-        <Label Text="Chats — coming soon" FontSize="20" HorizontalOptions="Center" />
-    </VerticalStackLayout>
+    <Grid RowDefinitions="Auto,*,Auto,Auto">
+
+        <ScrollView Grid.Row="0" Orientation="Horizontal" Padding="10,8">
+            <HorizontalStackLayout x:Name="HistoryStrip" Spacing="8" />
+        </ScrollView>
+
+        <ScrollView x:Name="MessagesScroll" Grid.Row="1">
+            <VerticalStackLayout x:Name="MessagesStack" Padding="10" Spacing="10" />
+        </ScrollView>
+
+        <VerticalStackLayout x:Name="ModeSelectionPanel" Grid.Row="2" IsVisible="False" Padding="10" Spacing="8" BackgroundColor="#f0f0f0">
+            <Label Text="This question needs a mode:" FontAttributes="Bold" />
+            <HorizontalStackLayout Spacing="6">
+                <Button Text="Quick" Clicked="OnDirectModeClicked" />
+                <Button Text="Full MAGI" Clicked="OnMagiModeClicked" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Spacing="6">
+                <Button Text="Melchior" Clicked="OnMelchiorOnlyClicked" />
+                <Button Text="Balthasar" Clicked="OnBalthasarOnlyClicked" />
+                <Button Text="Casper" Clicked="OnCasperOnlyClicked" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto" Padding="10" ColumnSpacing="8">
+            <Entry x:Name="PromptEntry" Placeholder="Message..." Grid.Column="0" />
+            <Button Text="Send" Clicked="OnSendClicked" Grid.Column="1" />
+        </Grid>
+    </Grid>
 </ContentPage>

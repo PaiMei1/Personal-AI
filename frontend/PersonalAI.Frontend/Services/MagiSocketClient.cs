@@ -7,7 +7,7 @@ namespace PersonalAI.Frontend.Services;
 
 public class MagiSocketClient : IMagiSocketClient
 {
-    private const string WsUrl = "ws://localhost:8080/ws";
+    private const string WsUrl = "ws://192.168.100.192:8080/ws";
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {

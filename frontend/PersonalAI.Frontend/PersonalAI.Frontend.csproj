@@ -3,7 +3,6 @@
     <PropertyGroup>
         <!-- Entitlements routing for Mac and iOS -->
         <CodesignEntitlements Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">Platforms/MacCatalyst/Entitlements.plist</CodesignEntitlements>
-        <CodesignEntitlements Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">Platforms/iOS/Entitlements.plist</CodesignEntitlements>
 
         <TargetFrameworks>net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
@@ -30,6 +29,13 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+    </PropertyGroup>
+
+    <!-- Automatic signing for real iOS devices -->
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios' and '$(RuntimeIdentifier)' == 'ios-arm64'">
+        <CodesignKey>Apple Development: vukjovanovic56@icloud.com (V7VZQA5QZ9)</CodesignKey>
+        <CodesignProvision>iOS Team Provisioning Profile: com.companyname.personalai.frontend</CodesignProvision>
+        <CodesignTeamId>V7VZQA5QZ9</CodesignTeamId>
     </PropertyGroup>
 
     <!-- THE FIX: Ad-Hoc signing for the Intel iOS Simulator -->

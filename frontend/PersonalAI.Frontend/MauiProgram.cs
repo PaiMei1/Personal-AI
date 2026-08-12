@@ -19,7 +19,7 @@ public static class MauiProgram
 
         builder.Services.AddHttpClient<IAuthApiClient, AuthApiClient>(client =>
         {
-            client.BaseAddress = new Uri("http://localhost:8080/");
+            client.BaseAddress = new Uri("http://192.168.100.192:8080/");
         });
         builder.Services.AddSingleton<ITokenStore, SecureTokenStore>();
         builder.Services.AddSingleton<AuthState>();
@@ -27,11 +27,12 @@ public static class MauiProgram
         builder.Services.AddTransient<AuthHeaderHandler>();
         builder.Services.AddHttpClient<IChatApiClient, ChatApiClient>(client =>
         {
-            client.BaseAddress = new Uri("http://localhost:8080/");
+            client.BaseAddress = new Uri("http://192.168.100.192:8080/");
         })
         .AddHttpMessageHandler<AuthHeaderHandler>();
 
         builder.Services.AddTransient<IMagiSocketClient, MagiSocketClient>();
+        builder.Services.AddSingleton<MagiSessionState>();
 
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<SignupPage>();

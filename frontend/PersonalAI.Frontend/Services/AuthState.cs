@@ -1,3 +1,5 @@
+using Microsoft.Maui.Storage;
+
 namespace PersonalAI.Frontend.Services;
 
 public class AuthState
@@ -13,6 +15,10 @@ public class AuthState
         IsLoggedIn = true;
         Email = email;
         DisplayName = displayName;
+
+        Preferences.Default.Set("auth_email", email);
+        Preferences.Default.Set("auth_display_name", displayName ?? string.Empty);
+
         Changed?.Invoke();
     }
 
@@ -21,6 +27,32 @@ public class AuthState
         IsLoggedIn = false;
         Email = null;
         DisplayName = null;
+
+        Preferences.Default.Remove("auth_email");
+        Preferences.Default.Remove("auth_display_name");
+
         Changed?.Invoke();
+    }
+
+    public async Task<bool> TryRestoreAsync(ITokenStore tokenStore)
+    {
+        var token = await tokenStore.GetTokenAsync();
+        if (string.IsNullOrEmpty(token))
+        {
+            return false;
+        }
+
+        var email = Preferences.Default.Get("auth_email", string.Empty);
+        if (string.IsNullOrEmpty(email))
+        {
+            return false;
+        }
+
+        var displayName = Preferences.Default.Get("auth_display_name", string.Empty);
+
+        IsLoggedIn = true;
+        Email = email;
+        DisplayName = displayName;
+        return true;
     }
 }

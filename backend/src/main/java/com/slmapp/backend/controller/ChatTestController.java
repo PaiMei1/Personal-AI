@@ -1,5 +1,7 @@
 package com.slmapp.backend.controller;
 
+import com.slmapp.backend.dto.ChatPrepareRequest;
+import com.slmapp.backend.dto.ChatRequest;
 import com.slmapp.backend.entity.Message;
 import com.slmapp.backend.entity.User;
 import com.slmapp.backend.repository.MagiVerdictRepository;
@@ -33,16 +35,16 @@ public class ChatTestController {
     }
 
     @PostMapping("/prepare")
-    public Map<String, Boolean> prepare(@RequestParam String prompt) {
-        return Map.of("requiresModeSelection", chatOrchestrationService.requiresModeSelection(prompt));
+    public Map<String, Boolean> prepare(@RequestBody ChatPrepareRequest request) {
+        return Map.of("requiresModeSelection", chatOrchestrationService.requiresModeSelection(request.prompt()));
     }
 
     @PostMapping
-    public Message ask(@RequestParam String prompt, @RequestParam(required = false) String mode) {
+    public Message ask(@RequestBody ChatRequest request) {
         User testUser = userRepository.findByEmail(TEST_USER_EMAIL)
                 .orElseThrow(() -> new IllegalStateException(
                         "Test user '" + TEST_USER_EMAIL + "' not found - sign up that email first on this database"));
-        return chatOrchestrationService.start(testUser.getId(), null, prompt, mode);
+        return chatOrchestrationService.start(testUser.getId(), null, request.prompt(), request.mode());
     }
 
     @GetMapping("/{messageId}/status")

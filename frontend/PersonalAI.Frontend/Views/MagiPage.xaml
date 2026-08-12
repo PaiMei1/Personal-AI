@@ -1,53 +1,117 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
              x:Class="PersonalAI.Frontend.Views.MagiPage"
-             Title="MAGI">
+             Title="MAGI"
+             BackgroundColor="#000000">
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
+        <Border Stroke="#e08a1e" StrokeThickness="2" Margin="8" Padding="10" BackgroundColor="#000000">
+            <VerticalStackLayout Spacing="10">
 
-            <Editor x:Name="PromptEditor" Placeholder="Ask something..." AutoSize="TextChanges" HeightRequest="100" />
-            <Button x:Name="SendButton" Text="Send" Clicked="OnSendClicked" />
+                <!-- Top bar: question / resolution labels -->
+                <Grid ColumnDefinitions="*,*">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                        <Label Text="質 問" FontFamily="Courier New" FontSize="22" TextColor="#e08a1e" FontAttributes="Bold" />
+                        <BoxView HeightRequest="2" Color="#2fae5c" />
+                        <BoxView HeightRequest="2" Color="#2fae5c" Margin="0,2,0,0" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="End">
+                        <Label Text="解 決" FontFamily="Courier New" FontSize="22" TextColor="#e08a1e" FontAttributes="Bold" HorizontalOptions="End" />
+                        <BoxView HeightRequest="2" Color="#2fae5c" />
+                        <BoxView HeightRequest="2" Color="#2fae5c" Margin="0,2,0,0" />
+                    </VerticalStackLayout>
+                </Grid>
 
-            <VerticalStackLayout x:Name="ModeSelectionPanel" IsVisible="False" Spacing="10">
-                <Label Text="This question needs a mode:" FontAttributes="Bold" />
-                <Button Text="Quick Answer (DIRECT)" Clicked="OnDirectModeClicked" />
-                <Button Text="Full MAGI Debate" Clicked="OnMagiModeClicked" />
-                <Button Text="Melchior Only" Clicked="OnMelchiorOnlyClicked" />
-                <Button Text="Balthasar Only" Clicked="OnBalthasarOnlyClicked" />
-                <Button Text="Casper Only" Clicked="OnCasperOnlyClicked" />
+                <!-- Code block + verdict badge -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout Grid.Column="0" Spacing="1">
+                        <Label Text="CODE:001" FontFamily="Courier New" FontSize="12" TextColor="#e08a1e" />
+                        <Label Text="FILE:MAGI_SYS" FontFamily="Courier New" FontSize="11" TextColor="#e08a1e" />
+                        <Label x:Name="ModeLabel" Text="MODE:IDLE" FontFamily="Courier New" FontSize="11" TextColor="#e08a1e" />
+                        <Label x:Name="PriorityLabel" Text="STATUS:STANDBY" FontFamily="Courier New" FontSize="11" TextColor="#e08a1e" />
+                    </VerticalStackLayout>
+                    <Border Grid.Column="1" x:Name="VerdictBadgeBorder" Stroke="#3a9fd8" StrokeThickness="2" Padding="10,4" VerticalOptions="Start">
+                        <Label x:Name="VerdictBadgeLabel" Text="待機" FontFamily="Courier New" FontSize="16" TextColor="#3a9fd8" FontAttributes="Bold" />
+                    </Border>
+                </Grid>
+
+                <!-- MAGI triangle graphic -->
+                <Grid WidthRequest="340" HeightRequest="300" HorizontalOptions="Center" Margin="0,10">
+
+                    <!-- BALTHASAR (top) -->
+                    <shapes:Polygon x:Name="BalthasarPolygon"
+                                    Points="0,0 160,0 130,110 80,130 30,110"
+                                    Fill="#2fb8d8" Stroke="#e08a1e" StrokeThickness="2"
+                                    WidthRequest="160" HeightRequest="130"
+                                    HorizontalOptions="Start" VerticalOptions="Start"
+                                    Margin="90,10,0,0" />
+                    <VerticalStackLayout WidthRequest="160" HeightRequest="100" Margin="90,15,0,0"
+                                         HorizontalOptions="Start" VerticalOptions="Start"
+                                         Spacing="2">
+                        <Label Text="BALTHASAR・2" FontFamily="Courier New" FontAttributes="Bold" FontSize="13" TextColor="#000000" HorizontalTextAlignment="Center" />
+                        <Label x:Name="BalthasarStatusLabel" Text="IDLE" FontFamily="Courier New" FontSize="10" TextColor="#003a44" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+
+                    <!-- CASPER (bottom left) -->
+                    <shapes:Polygon x:Name="CasperPolygon"
+                                    Points="0,0 120,0 140,30 140,140 0,140"
+                                    Fill="#2fb8d8" Stroke="#e08a1e" StrokeThickness="2"
+                                    WidthRequest="140" HeightRequest="140"
+                                    HorizontalOptions="Start" VerticalOptions="Start"
+                                    Margin="10,150,0,0" />
+                    <VerticalStackLayout WidthRequest="130" HeightRequest="100" Margin="10,185,0,0"
+                                         HorizontalOptions="Start" VerticalOptions="Start"
+                                         Spacing="2">
+                        <Label Text="CASPER・3" FontFamily="Courier New" FontAttributes="Bold" FontSize="13" TextColor="#000000" HorizontalTextAlignment="Center" />
+                        <Label x:Name="CasperStatusLabel" Text="IDLE" FontFamily="Courier New" FontSize="10" TextColor="#003a44" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+
+                    <!-- MELCHIOR (bottom right) -->
+                    <shapes:Polygon x:Name="MelchiorPolygon"
+                                    Points="140,0 20,0 0,30 0,140 140,140"
+                                    Fill="#2fb8d8" Stroke="#e08a1e" StrokeThickness="2"
+                                    WidthRequest="140" HeightRequest="140"
+                                    HorizontalOptions="Start" VerticalOptions="Start"
+                                    Margin="190,150,0,0" />
+                    <VerticalStackLayout WidthRequest="130" HeightRequest="100" Margin="200,185,0,0"
+                                         HorizontalOptions="Start" VerticalOptions="Start"
+                                         Spacing="2">
+                        <Label Text="MELCHIOR・1" FontFamily="Courier New" FontAttributes="Bold" FontSize="13" TextColor="#000000" HorizontalTextAlignment="Center" />
+                        <Label x:Name="MelchiorStatusLabel" Text="IDLE" FontFamily="Courier New" FontSize="10" TextColor="#003a44" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+
+                    <!-- Center MAGI hexagon -->
+                    <shapes:Polygon Points="10,0 50,0 60,40 50,80 10,80 0,40"
+                                    Fill="#000000" Stroke="#e08a1e" StrokeThickness="2"
+                                    WidthRequest="60" HeightRequest="80"
+                                    HorizontalOptions="Start" VerticalOptions="Start"
+                                    Margin="140,140,0,0" />
+                    <Label Text="MAGI" FontFamily="Courier New" FontAttributes="Bold" FontSize="13" TextColor="#e08a1e"
+                           WidthRequest="60" Margin="140,170,0,0" HorizontalOptions="Start" VerticalOptions="Start"
+                           HorizontalTextAlignment="Center" />
+                </Grid>
+
+                <!-- Answer text areas -->
+                <Label x:Name="BalthasarAnswerLabel" FontFamily="Courier New" FontSize="10" TextColor="#e08a1e" />
+                <Label x:Name="CasperAnswerLabel" FontFamily="Courier New" FontSize="10" TextColor="#e08a1e" />
+                <Label x:Name="MelchiorAnswerLabel" FontFamily="Courier New" FontSize="10" TextColor="#e08a1e" />
+
+                <!-- Bottom bars -->
+                <Border Stroke="#e08a1e" StrokeThickness="1" Padding="8,4">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="access code:" FontFamily="Courier New" FontSize="11" TextColor="#e08a1e" Grid.Column="0" />
+                        <Label Text="••••••••••••••••" FontFamily="Courier New" FontSize="11" TextColor="#e08a1e" Grid.Column="1" Margin="8,0,0,0" />
+                    </Grid>
+                </Border>
+                <Border Stroke="#e08a1e" StrokeThickness="1" Padding="8,4">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Text="question:" FontFamily="Courier New" FontSize="11" TextColor="#e08a1e" Grid.Column="0" />
+                        <Label x:Name="QuestionLabel" Text="" FontFamily="Courier New" FontSize="11" TextColor="#e08a1e" Grid.Column="1" Margin="8,0,0,0" LineBreakMode="TailTruncation" />
+                    </Grid>
+                </Border>
+
             </VerticalStackLayout>
-
-            <ActivityIndicator x:Name="LoadingIndicator" IsRunning="False" IsVisible="False" />
-            <Label x:Name="ErrorLabel" TextColor="Red" IsVisible="False" />
-
-            <Border Stroke="Gray" StrokeThickness="1" Padding="10">
-                <VerticalStackLayout>
-                    <Label Text="MELCHIOR" FontAttributes="Bold" />
-                    <Label x:Name="MelchiorStatusLabel" Text="Idle" />
-                    <Label x:Name="MelchiorAnswerLabel" FontSize="12" />
-                </VerticalStackLayout>
-            </Border>
-
-            <Border Stroke="Gray" StrokeThickness="1" Padding="10">
-                <VerticalStackLayout>
-                    <Label Text="BALTHASAR" FontAttributes="Bold" />
-                    <Label x:Name="BalthasarStatusLabel" Text="Idle" />
-                    <Label x:Name="BalthasarAnswerLabel" FontSize="12" />
-                </VerticalStackLayout>
-            </Border>
-
-            <Border Stroke="Gray" StrokeThickness="1" Padding="10">
-                <VerticalStackLayout>
-                    <Label Text="CASPER" FontAttributes="Bold" />
-                    <Label x:Name="CasperStatusLabel" Text="Idle" />
-                    <Label x:Name="CasperAnswerLabel" FontSize="12" />
-                </VerticalStackLayout>
-            </Border>
-
-            <Label x:Name="VerdictLabel" FontAttributes="Bold" FontSize="18" IsVisible="False" HorizontalOptions="Center" />
-            <Label x:Name="DirectAnswerLabel" IsVisible="False" />
-
-        </VerticalStackLayout>
+        </Border>
     </ScrollView>
 </ContentPage>
